@@ -12,37 +12,82 @@ using System.Windows.Media.Imaging;
 
 namespace AIR_API
 {
-
-    public class Sonic3AIRAnim
+    public class Animation
     {
-        public class Rect
-        {
-            public int X { get; set; }
-            public int Y { get; set; }
-            public int Width { get; set; }
-            public int Height { get; set; }
-            public Rect(int x, int y, int width, int height)
-            {
-                X = x;
-                Y = y;
-                Width = width;
-                Height = height;
-            }
+        private Anim Instance;
 
-            public Rect()
+        public List<Anim.Frame> FrameList { get => Instance.FrameList; set => Instance.FrameList = value; }
+        public string Directory { get => Instance.Directory; set => Instance.Directory = value; }
+        public string FileLocation { get => Instance.FileLocation; set => Instance.FileLocation = value; }
+
+        public Animation(FileInfo file)
+        {
+            try
+            {
+                Instance = new Anim(file);
+            }
+            catch (Exception ex)
+            {
+                Instance = null;
+            }
+        }
+
+        public Animation(string _directory, string _fileLocation)
+        {
+            try
+            {
+                Instance = new Anim(_directory, _fileLocation);
+            }
+            catch (Exception ex)
+            {
+                Instance = null;
+            }
+        }
+
+
+        public void Save(string SaveAsLocation = "")
+        {
+            try
+            {
+                Instance.Save(SaveAsLocation);
+            }
+            catch (Exception ex)
             {
 
             }
         }
 
-        private string nL = Environment.NewLine;
-        public List<Sonic3AIRFrame> FrameList = new List<Sonic3AIRFrame>();
-        public string Directory;
-        public string FileLocation;
+        public class Anim
+        {
+
+            public class Rect
+            {
+                public int X { get; set; }
+                public int Y { get; set; }
+                public int Width { get; set; }
+                public int Height { get; set; }
+                public Rect(int x, int y, int width, int height)
+                {
+                    X = x;
+                    Y = y;
+                    Width = width;
+                    Height = height;
+                }
+
+                public Rect()
+                {
+
+                }
+            }
+
+            private string nL = Environment.NewLine;
+            public List<Frame> FrameList = new List<Frame>();
+            public string Directory;
+            public string FileLocation;
 
 
 
-        public Sonic3AIRAnim(FileInfo file)
+            public Anim(FileInfo file)
             {
                 Directory = file.Directory.FullName;
                 FileLocation = file.FullName;
@@ -89,21 +134,23 @@ namespace AIR_API
                                 }
                             }
                         }
-                        if (_center_x != null && _center_y != null) FrameList.Add(new Sonic3AIRFrame(_name, _file, (int)_rect.X, (int)_rect.Y, (int)_rect.Width, (int)_rect.Height, (int)_center_x, (int)_center_y, Directory));
-                        else FrameList.Add(new Sonic3AIRFrame(_name, _file, (int)_rect.X, (int)_rect.Y, (int)_rect.Width, (int)_rect.Height, 0, 0, Directory));
+                        if (_center_x != null && _center_y != null) FrameList.Add(new Frame(_name, _file, (int)_rect.X, (int)_rect.Y, (int)_rect.Width, (int)_rect.Height, (int)_center_x, (int)_center_y, Directory));
+                        else FrameList.Add(new Frame(_name, _file, (int)_rect.X, (int)_rect.Y, (int)_rect.Width, (int)_rect.Height, 0, 0, Directory));
                     }
 
                 }
+
+
             }
 
-        public Sonic3AIRAnim(string _directory, string _fileLocation)
+            public Anim(string _directory, string _fileLocation)
             {
                 Directory = _directory;
                 FileLocation = _fileLocation;
-                FrameList.Add(new Sonic3AIRFrame(Directory));
+                FrameList.Add(new Frame(Directory));
             }
 
-        public void Save(string SaveAsLocation = "")
+            public void Save(string SaveAsLocation = "")
             {
                 string bc = "}";
                 string bo = "{";
@@ -112,7 +159,7 @@ namespace AIR_API
                 string output = "";
                 output += "{";
                 int count = FrameList.Count() - 1;
-                foreach (Sonic3AIRFrame frame in FrameList)
+                foreach (Frame frame in FrameList)
                 {
                     int index = FrameList.IndexOf(frame);
                     output += nL;
@@ -130,7 +177,7 @@ namespace AIR_API
 
             }
 
-        public class Sonic3AIRFrame
+            public class Frame
             {
                 public string Name;
                 public string File;
@@ -155,27 +202,32 @@ namespace AIR_API
                     BitmapImage img = new BitmapImage();
                     string path = $"{Directory}\\{File}";
 
-                    img.BeginInit();
-                    img.UriSource = new Uri(path);
-                    img.EndInit();
-
-                    if (Width > 0 && Height > 0 && img != null)
+                    if (System.IO.File.Exists(path))
                     {
-                        try
+                        img.BeginInit();
+                        img.UriSource = new Uri(path);
+                        img.EndInit();
+
+                        if (Width > 0 && Height > 0 && img != null)
                         {
-                            bitmap = new CroppedBitmap(img,
-                            new System.Windows.Int32Rect()
+                            try
                             {
-                                X = X,
-                                Y = Y,
-                                Width = Width,
-                                Height = Height
-                            });
-                        }
-                        catch (ArgumentException)
-                        {
+                                bitmap = new CroppedBitmap(img,
+                                new System.Windows.Int32Rect()
+                                {
+                                    X = X,
+                                    Y = Y,
+                                    Width = Width,
+                                    Height = Height
+                                });
+                            }
+                            catch (ArgumentException)
+                            {
+                            }
                         }
                     }
+
+
 
 
 
@@ -183,7 +235,7 @@ namespace AIR_API
                     return result;
                 }
 
-                public Sonic3AIRFrame(string _name, string _file, int _x, int _y, int _width, int _height, int _centerX, int _centerY, string _directory)
+                public Frame(string _name, string _file, int _x, int _y, int _width, int _height, int _centerX, int _centerY, string _directory)
                 {
                     Name = _name;
                     File = _file;
@@ -196,7 +248,7 @@ namespace AIR_API
                     CenterY = _centerY;
                 }
 
-                public Sonic3AIRFrame(string _directory)
+                public Frame(string _directory)
                 {
                     Name = "New Frame";
                     File = "";
@@ -213,5 +265,8 @@ namespace AIR_API
 
             }
         }
+    }
+
+
 
 }
