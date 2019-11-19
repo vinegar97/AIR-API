@@ -4,195 +4,126 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using Newtonsoft.Json;
 
 namespace AIR_API
 {
     public class Settings
     {
-        public bool FailSafeMode = false;
-        public string Sonic3KRomPath = "";
-        public bool FixGlitches = false;
-        public bool EnableDevMode = false;
-        public int Fullscreen = 0;
+        public bool FailSafeMode { get => RawSettings.FailSafeMode; set => RawSettings.FailSafeMode = value; }
+        public string Sonic3KRomPath { get => RawSettings.RomPath; set => RawSettings.RomPath = value; }
+        public bool FixGlitches { get => RawSettings.GameplayTweaks.GAMEPLAY_TWEAK_FIX_GLITCHES != 0; set => RawSettings.GameplayTweaks.GAMEPLAY_TWEAK_FIX_GLITCHES = (value == true ? 1 : 0); }
+        public bool EnableDebugMode { get => RawSettings.DebugMode; set => RawSettings.DebugMode = value; }
+        public int Fullscreen { get => RawSettings.Fullscreen; set => RawSettings.Fullscreen = value; }
+        public string AIREXEPath { get => RawSettings.GameExePath; set => RawSettings.GameExePath = value; }
+        public Version Version { get => GetVersion(); }
+        private Version GetVersion()
+        {
+            if (RawSettings.GameVersion != null) return new Version(RawSettings.GameVersion);
+            else return null;
+        }
+        private bool DetectIfHasEXEPath()
+        {
+            if (RawSettings.GameExePath != null) return false;
+            else return true;
+        }
 
-        public string AIREXEPath = "";
-        public bool HasEXEPath = true;
+        public bool HasEXEPath { get => DetectIfHasEXEPath(); }
         public string FilePath = "";
-        private dynamic jsonObj;
-        public Version Version = new Version();
 
-        public LoadOptions DefaultLoadOptions;
+        public AIRSettings RawSettings;
 
-
-        public class LoadOptions
+        #region Classes for Settings.JSON
+        public class GameplayTweaks
         {
-            public bool ThrowNoExceptionsForMissingAttributesBesidesVersion = false;
-            public bool ThrowNoExceptionsForVersionMismatch = false;
-            public Version TargetVersion = new Version("19.08.17.0");
-
-            public LoadOptions(bool _ThrowNoExceptionsForMissingAttributes = false, Version _targetVersion = null, bool _ThrowNoExceptionsForVersionMismatch = false)
-            {
-                ThrowNoExceptionsForMissingAttributesBesidesVersion = _ThrowNoExceptionsForMissingAttributes;
-                if (_targetVersion != null) TargetVersion = _targetVersion;
-                ThrowNoExceptionsForVersionMismatch = _ThrowNoExceptionsForVersionMismatch;
-            }
+            public int GAMEPLAY_TWEAK_AIZ_BLIMPSEQUENCE { get; set; }
+            public int GAMEPLAY_TWEAK_BS_COUNTDOWN_RINGS { get; set; }
+            public int GAMEPLAY_TWEAK_BS_REPEAT_ON_FAIL { get; set; }
+            public int GAMEPLAY_TWEAK_CAMERA_OUTRUN { get; set; }
+            public int GAMEPLAY_TWEAK_CANCEL_FLIGHT { get; set; }
+            public int GAMEPLAY_TWEAK_DISABLE_GHOST_SPAWN { get; set; }
+            public int GAMEPLAY_TWEAK_EXTENDED_CAMERA { get; set; }
+            public int GAMEPLAY_TWEAK_EXTENDED_HUD { get; set; }
+            public int GAMEPLAY_TWEAK_FIX_GLITCHES { get; set; }
+            public int GAMEPLAY_TWEAK_HYPER_TAILS { get; set; }
+            public int GAMEPLAY_TWEAK_ICZ_NIGHTTIME { get; set; }
+            public int GAMEPLAY_TWEAK_INFINITE_LIVES { get; set; }
+            public int GAMEPLAY_TWEAK_INFINITE_TIME { get; set; }
+            public int GAMEPLAY_TWEAK_LBZ_BIGARMS { get; set; }
+            public int GAMEPLAY_TWEAK_LEVELLAYOUTS { get; set; }
+            public int GAMEPLAY_TWEAK_RANDOM_MONITORS { get; set; }
+            public int GAMEPLAY_TWEAK_RANDOM_SPECIALSTAGES { get; set; }
+            public int GAMEPLAY_TWEAK_SMOOTH_ROTATION { get; set; }
+            public int GAMEPLAY_TWEAK_SPEEDUP_AFTERIMGS { get; set; }
+            public int GAMEPLAY_TWEAK_SSZ_BOSS_TRACKS { get; set; }
+            public int GAMEPLAY_TWEAK_SUPERFAST_RUNANIM { get; set; }
+            public int GAMEPLAY_TWEAK_SUPER_CANCEL { get; set; }
+            public int GAMEPLAY_TWEAK_TAILS_ASSIST_MODE { get; set; }
         }
 
-        
-        public Settings(FileInfo settings, LoadOptions loadOptions = null)
+        public class AIRSettings
+        {
+            public int ActiveSoundtrack { get; set; }
+            public double Audio_MusicVolume { get; set; }
+            public double Audio_SoundVolume { get; set; }
+            public int BackgroundBlur { get; set; }
+            public bool DebugMode { get; set; }
+            public bool DropDashActive { get; set; }
+            public bool FailSafeMode { get; set; }
+            public int Filtering { get; set; }
+            public int Fullscreen { get; set; }
+            public string GameExePath { get; set; }
+            public string GameVersion { get; set; }
+
+            #region Gameplay Tweaks Anti-Nulling
+            public GameplayTweaks GameplayTweaks { get => GetGameplayTweaks(); set => SetGameplayTweaks(value); }
+
+            #region Get/Set Methods
+            [JsonIgnore]
+            private GameplayTweaks _GameplayTweaks = new GameplayTweaks();
+            private GameplayTweaks GetGameplayTweaks()
+            {
+                if (_GameplayTweaks == null) _GameplayTweaks = new GameplayTweaks();
+                return _GameplayTweaks;
+            }
+            private void SetGameplayTweaks(GameplayTweaks value)
+            {
+                if (value != null) _GameplayTweaks = value;
+            }
+            #endregion
+            #endregion
+
+            public int GfxAntiFlicker { get; set; }
+            public int MusicSelect_ExtraLifeJingle { get; set; }
+            public int MusicSelect_HiddenPalaceMusic { get; set; }
+            public int MusicSelect_InvincibilityTheme { get; set; }
+            public int MusicSelect_KnucklesTheme { get; set; }
+            public int MusicSelect_MiniBossTheme { get; set; }
+            public int MusicSelect_SuperTheme { get; set; }
+            public int MusicSelect_TitleTheme { get; set; }
+            public int Region { get; set; }
+            public string RomPath { get; set; }
+            public int Scanlines { get; set; }
+            public int SpecialStageVisuals { get; set; }
+            public bool SuperPeelOutActive { get; set; }
+            public int TimeAttackGhosts { get; set; }
+            public int Upscaling { get; set; }
+            public bool UseSoftwareRenderer { get; set; }
+            public double Volume { get; set; }
+        }
+        #endregion
+
+        public Settings(FileInfo settings)
         {
             FilePath = settings.FullName;
             string data = File.ReadAllText(FilePath);
-            bool isExceptionVersionRelatedForSure = false;
-            if (loadOptions == null) loadOptions = new LoadOptions();
-
-            try
-            {
-                jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(data);
-
-                try
-                {
-                    string version = jsonObj.GameVersion;
-                    Version = new Version(version);
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-
-                try
-                {
-                    var result = Version.CompareTo(loadOptions.TargetVersion);
-                    if (result < 0 && loadOptions.ThrowNoExceptionsForVersionMismatch)
-                    {
-                        System.Diagnostics.Debug.Print($"Sonic 3 A.I.R is out of date, please use version {loadOptions.TargetVersion.ToString()} or above! (and start it at least once fully)");
-                        isExceptionVersionRelatedForSure = true;
-                        throw new Exception();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    if (!loadOptions.ThrowNoExceptionsForMissingAttributesBesidesVersion) throw ex;
-                }
-
-                try
-                {
-                    FailSafeMode = jsonObj.FailSafeMode;
-                }
-                catch (Exception ex)
-                {
-                    if (!loadOptions.ThrowNoExceptionsForMissingAttributesBesidesVersion) throw ex;
-                }
-
-                try
-                {
-                    FixGlitches = jsonObj.GameplayTweaks.GAMEPLAY_TWEAK_FIX_GLITCHES;
-                }
-                catch (Exception ex)
-                {
-                    if (!loadOptions.ThrowNoExceptionsForMissingAttributesBesidesVersion) throw ex;
-                }
-
-                try
-                {
-                    EnableDevMode = jsonObj.DebugMode;
-                }
-                catch (Exception ex)
-                {
-                    EnableDevMode = false;
-                }
-           
-                try
-                {
-                    Sonic3KRomPath = jsonObj.RomPath;
-                }
-                catch (Exception ex)
-                {
-                    if (!loadOptions.ThrowNoExceptionsForMissingAttributesBesidesVersion) throw ex;
-                }
-
-                try
-                {
-                    AIREXEPath = jsonObj.GameExePath;
-                }
-                catch
-                {
-                    AIREXEPath = "";
-                    HasEXEPath = false;
-                }
-                try
-                {
-                    Fullscreen = jsonObj.Fullscreen;
-                }
-                catch (Exception ex)
-                {
-                    Fullscreen = 0;
-                }
-
-            }
-            catch (Exception ex)
-            {
-                if (!isExceptionVersionRelatedForSure) System.Diagnostics.Debug.Print("JSON Error, File Not Found, or A.I.R is Outdated! Unable to Load Mod Manager!" + Environment.NewLine + $"If AIR is out of date, please use version {loadOptions.TargetVersion.ToString()} or above! (and start it at least once fully)");
-                throw ex;
-            }
-
-
-
-
-
-        }
-        
-
-            /*
-        public Settings (FileInfo settings, LoadOptions loadOptions = null)
-        {
-            FilePath = settings.FullName;
-            string data = File.ReadAllText(FilePath);
-            if (loadOptions == null) loadOptions = new LoadOptions();
-            jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(data);
-            string version = (jsonObj.GameVersion == null ? "0.0.0.0" : jsonObj.GameVersion);
-            Version = new Version(version);
-            FailSafeMode = (jsonObj.FailSafeMode == null ? false : jsonObj.FailSafeMode);
-            Sonic3KRomPath = (jsonObj.RomPath == null ? "NULL" : jsonObj.RomPath);
-            FixGlitches = (jsonObj.GameplayTweaks.GAMEPLAY_TWEAK_FIX_GLITCHES == null ? false : jsonObj.GameplayTweaks.GAMEPLAY_TWEAK_FIX_GLITCHES);
-            AIREXEPath = (jsonObj.GameExePath == null ? "" : jsonObj.GameExePath);
-            HasEXEPath = (jsonObj.GameExePath == null ? false : true);
-        }*/
-
-        private void PraseSettings()
-        {
-            if (FailSafeMode == true)
-            {
-                jsonObj.FailSafeMode = true;
-            }
-            else
-            {
-                jsonObj.FailSafeMode = false;
-            }
-            if (FixGlitches == true)
-            {
-                jsonObj.GameplayTweaks.GAMEPLAY_TWEAK_FIX_GLITCHES = 1;
-            }
-            else
-            {
-                jsonObj.GameplayTweaks.GAMEPLAY_TWEAK_FIX_GLITCHES = 0;
-            }
-            if (EnableDevMode == true)
-            {
-                jsonObj.DebugMode = true;
-            }
-            else
-            {
-                jsonObj.DebugMode = false;
-            }
-            jsonObj.Fullscreen = Fullscreen;
-            jsonObj.RomPath = Sonic3KRomPath;
+            RawSettings = Newtonsoft.Json.JsonConvert.DeserializeObject<AIRSettings>(data);
+            if (RawSettings == null) RawSettings = new AIRSettings();
         }
 
         public void SaveSettings()
         {
-            PraseSettings();
-            string output = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObj, Newtonsoft.Json.Formatting.Indented);
+            string output = Newtonsoft.Json.JsonConvert.SerializeObject(RawSettings, Newtonsoft.Json.Formatting.Indented);
             File.WriteAllText(FilePath, output);
         }
     }
