@@ -11,6 +11,7 @@ namespace AIR_API
 {
     public class Mod
     {
+        public string FileLocation { get; set; }
         public string Author { get; set; }
         public string Name { get; set; }
         public string TechnicalName { get; set; }
@@ -34,6 +35,7 @@ namespace AIR_API
             GameVersion = "N/A";
             ModVersion = "N/A";
 
+            FileLocation = "N/A";
             FolderName = "N/A";
             FolderPath = "N/A";
             TechnicalName = $"[{FolderName.Replace("#", "")}]";
@@ -63,6 +65,7 @@ namespace AIR_API
             GameVersion = stuff.Metadata.GameVersion;
             if (GameVersion == null) GameVersion = "N/A";
 
+            FileLocation = mod.FullName;
             FolderName = mod.Directory.Name;
             FolderPath = mod.Directory.FullName;
             TechnicalName = $"[{FolderName.Replace("#", "")}]";
