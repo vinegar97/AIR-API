@@ -40,12 +40,15 @@ namespace AIR_API
             if (RawJSONObject.Property("StartPhase") != null) StartPhase = (int)RawJSONObject.Property("StartPhase").Value;
             if (RawJSONObject.Property("UseCharacters") != null) UseCharacters = (int)RawJSONObject.Property("UseCharacters").Value;
 
-            foreach (var device in RawJSON.InputDevices)
+            if (RawJSONObject.Property("InputDevices") != null)
             {
-                if (device is Newtonsoft.Json.Linq.JProperty)
+                foreach (var device in RawJSON.InputDevices)
                 {
-                    Newtonsoft.Json.Linq.JProperty deviceProp = device;
-                    Devices.Add(deviceProp.Name,new Device(deviceProp));
+                    if (device is Newtonsoft.Json.Linq.JProperty)
+                    {
+                        Newtonsoft.Json.Linq.JProperty deviceProp = device;
+                        Devices.Add(deviceProp.Name, new Device(deviceProp));
+                    }
                 }
             }
         }

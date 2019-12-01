@@ -36,7 +36,19 @@ namespace AIR_API
             string data = File.ReadAllText(FilePath);
             AIRSettingsBase.PraseSettings(ref RawSettings, data);
 
-            if (RawSettings is AIRSettingsMK2) PraseInputDevices(data);
+            if (RawSettings is AIRSettingsMK2)
+            {
+                try
+                {
+                    PraseInputDevices(data);
+                }
+                catch
+                {
+                    InputDevices = new InputDevices();
+                }
+            }
+
+
 
 
         }
@@ -52,7 +64,8 @@ namespace AIR_API
                     {
                         FileInfo config = new FileInfo($"{Path.GetDirectoryName(RawSettings.AIREXEPath)}//config.json");
                         GameConfig gameConfig = new GameConfig(config);
-                        InputDevices = gameConfig.InputDevices;
+                        if (gameConfig.InputDevices != null) InputDevices = gameConfig.InputDevices;
+                        else InputDevices = new InputDevices();
                     }
                     catch
                     {
