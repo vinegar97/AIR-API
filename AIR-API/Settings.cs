@@ -23,7 +23,7 @@ namespace AIR_API
 
 
         public InputDevices InputDevices { get; set; }
-        public Dictionary<string, Device> Devices { get => InputDevices.KeyPairs; set => InputDevices.KeyPairs = value; }
+        public List<KeyValuePair<string, Device>> Devices { get => InputDevices.Items; set => InputDevices.Items = value; }
 
 
         public string FilePath = "";
@@ -84,7 +84,7 @@ namespace AIR_API
                     if (device is Newtonsoft.Json.Linq.JProperty)
                     {
                         Newtonsoft.Json.Linq.JProperty deviceProp = device;
-                        Devices.Add(deviceProp.Name, new Device(deviceProp));
+                        Devices.Add(new KeyValuePair<string, Device>(deviceProp.Name, new Device(deviceProp)));
                     }
                 }
             }
@@ -148,7 +148,10 @@ namespace AIR_API
 
         public static void SaveSettings(ref AIRSettingsBase baseClass, string filePath, InputDevices inputDevices = null)
         {
-            if (baseClass is AIRSettingsMK2) (baseClass as AIRSettingsMK2).InputDevices = inputDevices.KeyPairs;
+            if (baseClass is AIRSettingsMK2)
+            {
+                (baseClass as AIRSettingsMK2).InputDevices = KeyPairListToDictionaryHelper.ToDictionary(inputDevices.Items, x => x.Key, x => x.Value); 
+            }
 
 
             string output = Newtonsoft.Json.JsonConvert.SerializeObject(baseClass, Newtonsoft.Json.Formatting.Indented);

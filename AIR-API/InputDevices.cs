@@ -14,30 +14,27 @@ namespace AIR_API
     {
         public InputDevices()
         {
-            KeyPairs = new Dictionary<string, Device>();
+            Items = new List<KeyValuePair<string, Device>>();
         }
-        public Dictionary<string, Device> KeyPairs { get; set; }
-        public List<Device> Items
-        {
-            get => KeyPairs.Values.ToList();
-        }
+        public List<KeyValuePair<string, Device>> Items { get; set; }
+
 
 
         public static JToken GetRawJSONValue(InputDevices input)
         {
-            return JProperty.Parse(JsonConvert.SerializeObject(input.KeyPairs));
+            return JProperty.Parse(JsonConvert.SerializeObject(input.Items));
         }
 
 
         public void ResetDevicesToDefault()
         {
-            KeyPairs.Clear();
-            KeyPairs.Add("Keyboard1", InputMappings.Keyboard1);
-            KeyPairs.Add("Keyboard2", InputMappings.Keyboard2);
-            KeyPairs.Add("XBoxController", InputMappings.XBoxController);
-            KeyPairs.Add("PS4Controller", InputMappings.PS4Controller);
-            KeyPairs.Add("LogitechController", InputMappings.LogitechController);
-            KeyPairs.Add("CustomController", InputMappings.CustomController);
+            Items.Clear();
+            Items.Add(new KeyValuePair<string, Device>("Keyboard1", InputMappings.Keyboard1));
+            Items.Add(new KeyValuePair<string, Device>("Keyboard2", InputMappings.Keyboard2));
+            Items.Add(new KeyValuePair<string, Device>("XBoxController", InputMappings.XBoxController));
+            Items.Add(new KeyValuePair<string, Device>("PS4Controller", InputMappings.PS4Controller));
+            Items.Add(new KeyValuePair<string, Device>("LogitechController", InputMappings.LogitechController));
+            Items.Add(new KeyValuePair<string, Device>("CustomController", InputMappings.CustomController));
         }
 
         public void ImportDevice(string filePath)
@@ -47,7 +44,7 @@ namespace AIR_API
 
             string intial_name = deviceImport.DeviceName;
             int copy_number = 0;
-            while (KeyPairs.ContainsKey(deviceImport.DeviceName))
+            while (Items.Exists(x => x.Key == deviceImport.DeviceName))
             {
                 copy_number++;
                 deviceImport.DeviceName = string.Format("{0}{1}", intial_name, copy_number);
@@ -56,7 +53,7 @@ namespace AIR_API
             if (deviceImport.HasDeviceNames) deviceImport.DeviceValues.HasDeviceNames = deviceImport.HasDeviceNames;
             else if (deviceImport.DeviceValues.DeviceNames.Count > 0) deviceImport.DeviceValues.HasDeviceNames = true;
             deviceImport.DeviceValues.EntryName = deviceImport.DeviceName;
-            KeyPairs.Add(deviceImport.DeviceName, deviceImport.DeviceValues);
+            Items.Add(new KeyValuePair<string, Device>(deviceImport.DeviceName, deviceImport.DeviceValues));
 
         }
     }

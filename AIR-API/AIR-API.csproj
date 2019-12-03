@@ -99,6 +99,7 @@
     <Compile Include="GameConfig.cs" />
     <Compile Include="InputDevices.cs" />
     <Compile Include="InputMappings.cs" />
+    <Compile Include="KeyPairListToDictionaryHelper.cs" />
     <Compile Include="Mod.cs" />
     <Compile Include="Recording.cs" />
     <Compile Include="Settings.cs" />

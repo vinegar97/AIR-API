@@ -19,7 +19,7 @@ namespace AIR_API
 
 
         public InputDevices InputDevices { get; set; }
-        public Dictionary<string, Device> Devices { get => InputDevices.KeyPairs; set => InputDevices.KeyPairs = value; }
+        public Dictionary<string, Device> Devices { get => KeyPairListToDictionaryHelper.ToDictionary(InputDevices.Items, x => x.Key, x => x.Value); set => InputDevices.Items = value.ToList(); }
 
 
 
