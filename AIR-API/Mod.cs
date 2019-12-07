@@ -11,16 +11,38 @@ namespace AIR_API
 {
     public class Mod
     {
+        public class AIRMod
+        {
+            public AIRMod()
+            {
+                Metadata = new Mod_Metadata();
+            }
+
+            public Mod_Metadata Metadata { get; set; }
+            public class Mod_Metadata
+            {
+                public string Name { get; set; }
+                public string Author { get; set; }
+                public string Description { get; set; }
+                public string URL { get; set; }
+                public string ModVersion { get; set; }
+                public string GameVersion { get; set; }
+            }
+        }
+
+        private AIRMod ModClass;
+
+
         public string FileLocation { get; set; }
-        public string Author { get; set; }
-        public string Name { get; set; }
+        public string Author { get => ModClass.Metadata.Author; set => ModClass.Metadata.Author = value; }
+        public string Name { get => ModClass.Metadata.Name; set => ModClass.Metadata.Name = value; }
         public string TechnicalName { get; set; }
-        public string Description { get; set; }
+        public string Description { get => ModClass.Metadata.Description; set => ModClass.Metadata.Description = value; }
         public string FolderName;
         public string FolderPath;
-        public string URL;
-        public string ModVersion;
-        public string GameVersion;
+        public string URL { get => ModClass.Metadata.URL; set => ModClass.Metadata.URL = value; }
+        public string ModVersion { get => ModClass.Metadata.ModVersion; set => ModClass.Metadata.ModVersion = value; }
+        public string GameVersion { get => ModClass.Metadata.GameVersion; set => ModClass.Metadata.GameVersion = value; }
         public bool EnabledLocal { get; set; }
         public bool IsEnabled { get; set; }
         public override string ToString() { return Name; }
@@ -28,6 +50,7 @@ namespace AIR_API
 
         public Mod()
         {
+            ModClass = new AIRMod();
             Author = "N/A";
             Name = "N/A";
             URL = "NULL";
@@ -42,10 +65,17 @@ namespace AIR_API
 
         }
 
+        public void Save()
+        {
+            string output = Newtonsoft.Json.JsonConvert.SerializeObject(ModClass, Newtonsoft.Json.Formatting.Indented);
+            File.WriteAllText(FileLocation, output);
+        }
+
         public Mod(FileInfo mod)
         {
             string data = File.ReadAllText(mod.FullName);
             dynamic stuff = JRaw.Parse(data);
+            ModClass = new AIRMod();
             //Author
             Author = stuff.Metadata.Author;
             if (Author == null) Author = "N/A";

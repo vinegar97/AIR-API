@@ -22,6 +22,14 @@ namespace AIR_API
         public bool HasEXEPath { get => RawSettings.HasEXEPath; }
 
 
+        public enum FullscreenType : int
+        {
+            Windowed = 0,
+            Fullscreen = 1,
+            ExclusiveFS = 2
+        }
+
+
         public InputDevices InputDevices { get; set; }
         public List<KeyValuePair<string, Device>> Devices { get => InputDevices.Items; set => InputDevices.Items = value; }
 
@@ -91,7 +99,7 @@ namespace AIR_API
 
         }
 
-        public void SaveSettings()
+        public void Save()
         {
             AIRSettingsBase.SaveSettings(ref RawSettings, FilePath, InputDevices);
         }

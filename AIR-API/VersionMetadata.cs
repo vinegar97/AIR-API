@@ -23,11 +23,14 @@ namespace AIR_API
         {
             FilePath = config.FullName;
             string data = File.ReadAllText(FilePath);
-            RawJSON = Newtonsoft.Json.JsonConvert.DeserializeObject(data);
-            VersionString = RawJSON.Version;
-            Version = new Version(VersionString);
-            Game = RawJSON.Game;
-            Author = RawJSON.Author;
+            dynamic RawJSON = JsonConvert.DeserializeObject(data);
+            JObject RawJSONObject = JObject.Parse(data);
+
+            if (RawJSONObject.Property("Version") != null) VersionString = (string)RawJSONObject.Property("Version").Value;
+            if (RawJSONObject.Property("Game") != null) Game = (string)RawJSONObject.Property("Game").Value;
+            if (RawJSONObject.Property("Author") != null) Author = (string)RawJSONObject.Property("Author").Value;
+
+            Version.TryParse(VersionString, out Version);
         }
     }
 }

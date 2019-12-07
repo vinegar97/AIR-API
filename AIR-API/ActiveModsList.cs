@@ -11,7 +11,10 @@ namespace AIR_API
 {
     public class ActiveModsList
     {
-        public List<string> ActiveMods = new List<string>();
+        private AIRActiveMods ActiveClass { get; set; }
+        public List<string> ActiveMods { get => ActiveClass.ActiveMods; set => ActiveClass.ActiveMods = value; }
+        public bool UseLegacyLoading { get => ActiveClass.UseLegacyLoading; set => ActiveClass.UseLegacyLoading = value; }
+
         public string ConfigPath = "";
         public ActiveModsList(FileInfo config)
         {
@@ -24,14 +27,7 @@ namespace AIR_API
             try
             {
                 string data = File.ReadAllText(ConfigPath);
-                JToken stuff = JRaw.Parse(data);
-                foreach (JProperty content in stuff.Children())
-                {
-                    if (content.HasValues)
-                    {
-                        ActiveMods.AddRange(content.Value.ToObject<List<string>>());
-                    }
-                }
+                ActiveClass = Newtonsoft.Json.JsonConvert.DeserializeObject<AIRActiveMods>(data);
             }
             catch (Exception ex)
             {
@@ -61,33 +57,19 @@ namespace AIR_API
 
         public void Save(List<string> CurrentActiveMods)
         {
-            var myFile = File.Create(ConfigPath);
-            myFile.Close();
-            string nL = Environment.NewLine;
-            string bracketOpen = "{";
-            string bracketClose = "}";
-            string fileHeader = $"{bracketOpen}{nL}\t\"ActiveMods\": [{nL}";
-            string fileFooter = $"{nL}\t]{nL}{bracketClose}";
-            string fileContents = fileHeader + GetFiles() + fileFooter;
-            using (StreamWriter writetext = new StreamWriter(ConfigPath)) writetext.WriteLine(fileContents);
+            if (!UseLegacyLoading) ActiveMods = CurrentActiveMods;
+            string output = Newtonsoft.Json.JsonConvert.SerializeObject(ActiveClass, Newtonsoft.Json.Formatting.Indented);
+            File.WriteAllText(ConfigPath, output);
 
-            string GetFiles()
-            {
-                string fileList = "";
-                string formatHead = "\t\t\"";
-                string formatFoot = "\",";
-                string formatFootEndofList = $"\"";
-                for (int i = 0; i < CurrentActiveMods.Count; i++)
-                {
-                    if (i >= CurrentActiveMods.Count - 1) fileList += $"{nL}{formatHead}{CurrentActiveMods[i]}{formatFootEndofList}";
-                    else fileList += $"{nL}{formatHead}{CurrentActiveMods[i]}{formatFoot}";
-                }
-                return fileList;
-            }
-
-            ActiveMods = CurrentActiveMods;
         }
 
 
+    }
+
+
+    public class AIRActiveMods
+    {
+        public List<string> ActiveMods { get; set; } = new List<string>();
+        public bool UseLegacyLoading { get; set; } = true;
     }
 }
