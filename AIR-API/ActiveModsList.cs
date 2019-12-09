@@ -11,7 +11,7 @@ namespace AIR_API
 {
     public class ActiveModsList
     {
-        private AIRActiveMods ActiveClass { get; set; }
+        public AIRActiveMods ActiveClass { get; set; }
         public List<string> ActiveMods { get => ActiveClass.ActiveMods; set => ActiveClass.ActiveMods = value; }
         public bool UseLegacyLoading { get => ActiveClass.UseLegacyLoading; set => ActiveClass.UseLegacyLoading = value; }
 
@@ -20,6 +20,12 @@ namespace AIR_API
         {
             ConfigPath = config.FullName;
             Load();
+        }
+
+        public ActiveModsList(AIRActiveMods data, string path)
+        {
+            ActiveClass = data;
+            ConfigPath = path;
         }
 
         public void Load()
@@ -55,9 +61,21 @@ namespace AIR_API
             Load();
         }
 
-        public void Save(List<string> CurrentActiveMods)
+        public void Save(AIRActiveMods CurrentActiveMods)
         {
-            if (!UseLegacyLoading) ActiveMods = CurrentActiveMods;
+            ActiveClass = CurrentActiveMods;
+            string output = Newtonsoft.Json.JsonConvert.SerializeObject(CurrentActiveMods, Newtonsoft.Json.Formatting.Indented);
+            File.WriteAllText(ConfigPath, output);
+
+        }
+
+        public void Save(List<string> CurrentActiveMods = null)
+        {
+            if (CurrentActiveMods != null)
+            {
+                if (!UseLegacyLoading) ActiveMods = CurrentActiveMods;
+            }
+
             string output = Newtonsoft.Json.JsonConvert.SerializeObject(ActiveClass, Newtonsoft.Json.Formatting.Indented);
             File.WriteAllText(ConfigPath, output);
 

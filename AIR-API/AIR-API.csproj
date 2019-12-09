@@ -99,16 +99,23 @@
     <Compile Include="GameConfig.cs" />
     <Compile Include="InputDevices.cs" />
     <Compile Include="InputMappings.cs" />
+    <Compile Include="Raw\Settings\Interfaces\AIRSettingsBase.cs" />
+    <Compile Include="Raw\Settings\Interfaces\AIRSettingsMK1.cs" />
+    <Compile Include="Raw\Settings\Interfaces\AIRSettingsMK2.cs" />
     <Compile Include="KeyPairListToDictionaryHelper.cs" />
     <Compile Include="Mod.cs" />
     <Compile Include="Recording.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="Raw\Settings\Structures\SettingsV0.cs" />
+    <Compile Include="Raw\Settings\Structures\SettingsV1.cs" />
+    <Compile Include="Raw\Settings\Structures\SettingsV2.cs" />
     <Compile Include="VersionCheck.cs" />
     <Compile Include="VersionMetadata.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
   <ProjectExtensions>
     <VisualStudio AllowExistingFolder="true" />
