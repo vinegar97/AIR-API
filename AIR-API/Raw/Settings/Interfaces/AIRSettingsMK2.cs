@@ -16,9 +16,9 @@ namespace AIR_API.Raw.Settings.Interfaces
         [JsonIgnore]
         public override string Sonic3KRomPath { get => this._Struct.RomPath; set => this._Struct.RomPath = value; }
         [JsonIgnore]
-        public override bool FixGlitches { get => this.GameplayTweaks.GAMEPLAY_TWEAK_FIX_GLITCHES != 0; set => this.GameplayTweaks.GAMEPLAY_TWEAK_FIX_GLITCHES = (value == true ? 1 : 0); }
+        public override bool FixGlitches { get => this.GameSettings.SETTING_FIX_GLITCHES != 0; set => this.GameSettings.SETTING_FIX_GLITCHES = (value == true ? 1 : 0); }
         [JsonIgnore]
-        public override bool EnableDebugMode { get => this._Struct.DebugMode; set => this._Struct.DebugMode = value; }
+        public override bool EnableDebugMode { get => this._Struct.GameSettings.SETTING_DEBUG_MODE != 0; set => this._Struct.GameSettings.SETTING_DEBUG_MODE = (value == true ? 1 : 0); }
         [JsonIgnore]
         public override string AIREXEPath { get => this._Struct.GameExePath; set => this._Struct.GameExePath = value; }
         [JsonIgnore]
@@ -31,7 +31,6 @@ namespace AIR_API.Raw.Settings.Interfaces
         public override int FullscreenMode { get => this._Struct.Fullscreen; set => this._Struct.Fullscreen = value; }
 
         public SettingsV2.Game_Settings GameSettings { get => GetGameSettings(); set => SetGameSettings(value); }
-        public SettingsV2.Gameplay_Tweaks GameplayTweaks { get => GetGameplayTweaks(); set => SetGameplayTweaks(value); }
         public Dictionary<string, Device> InputDevices { get => this._Struct.InputDevices; set => this._Struct.InputDevices = value; }
 
         #endregion
@@ -47,22 +46,6 @@ namespace AIR_API.Raw.Settings.Interfaces
             if (this._Struct.GameExePath != null) return true;
             else return false;
         }
-        #endregion
-
-        #region Gameplay Tweaks Anti-Nulling
-
-        [JsonIgnore]
-        private SettingsV2.Gameplay_Tweaks _GameplayTweaks = new SettingsV2.Gameplay_Tweaks();
-        private SettingsV2.Gameplay_Tweaks GetGameplayTweaks()
-        {
-            if (_GameplayTweaks == null) _GameplayTweaks = new SettingsV2.Gameplay_Tweaks();
-            return _GameplayTweaks;
-        }
-        private void SetGameplayTweaks(SettingsV2.Gameplay_Tweaks value)
-        {
-            if (value != null) _GameplayTweaks = value;
-        }
-
         #endregion
 
         #region Game Settings Anti-Nulling

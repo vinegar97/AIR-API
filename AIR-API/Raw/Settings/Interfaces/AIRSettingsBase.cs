@@ -40,18 +40,21 @@ namespace AIR_API.Raw.Settings.Interfaces
 
                 if (isVersionMK2(rawVersion))
                 {
-                    baseClass = Newtonsoft.Json.JsonConvert.DeserializeObject<AIRSettingsMK2>(data);
-                    if (baseClass == null) baseClass = new AIRSettingsMK2();
+                    baseClass = new AIRSettingsMK2();
+                    baseClass.Structure = Newtonsoft.Json.JsonConvert.DeserializeObject<SettingsV2>(data);
+                    if (baseClass.Structure == null) baseClass.Structure = new SettingsV2();
                 }
                 else
                 {
-                    baseClass = Newtonsoft.Json.JsonConvert.DeserializeObject<AIRSettingsMK1>(data);
-                    if (baseClass == null) baseClass = new AIRSettingsMK1();
+                    baseClass = new AIRSettingsMK1();
+                    baseClass.Structure = Newtonsoft.Json.JsonConvert.DeserializeObject<SettingsV1>(data);
+                    if (baseClass.Structure == null) baseClass.Structure = new SettingsV1();
                 }
             }
             catch
             {
                 if (baseClass == null) baseClass = new AIRSettingsMK2();
+                if (baseClass.Structure == null) baseClass.Structure = new SettingsV2();
             }
 
 
