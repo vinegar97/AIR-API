@@ -62,9 +62,11 @@ namespace AIR_API.Raw.Settings.Interfaces
 
         public static void SaveSettings(ref AIRSettingsBase baseClass, string filePath, InputDevices inputDevices = null)
         {
+
             if (baseClass is AIRSettingsMK2)
             {
                 (baseClass as AIRSettingsMK2).InputDevices = KeyPairListToDictionaryHelper.ToDictionary(inputDevices.Items, x => x.Key, x => x.Value);
+                ((baseClass as AIRSettingsMK2).Structure as SettingsV2).GameSettings = (baseClass as AIRSettingsMK2).GameSettings;
             }
 
 

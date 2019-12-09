@@ -45,7 +45,8 @@ namespace AIR_API
             {
                 try
                 {
-                    PraseInputDevices(data);
+                    if (data != "") PraseInputDevices(data);
+                    else InputDevices = new InputDevices();
                 }
                 catch
                 {

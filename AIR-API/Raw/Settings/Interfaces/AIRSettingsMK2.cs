@@ -18,7 +18,7 @@ namespace AIR_API.Raw.Settings.Interfaces
         [JsonIgnore]
         public override bool FixGlitches { get => this.GameSettings.SETTING_FIX_GLITCHES != 0; set => this.GameSettings.SETTING_FIX_GLITCHES = (value == true ? 1 : 0); }
         [JsonIgnore]
-        public override bool EnableDebugMode { get => this._Struct.GameSettings.SETTING_DEBUG_MODE != 0; set => this._Struct.GameSettings.SETTING_DEBUG_MODE = (value == true ? 1 : 0); }
+        public override bool EnableDebugMode { get => this.GameSettings.SETTING_DEBUG_MODE != 0; set => this.GameSettings.SETTING_DEBUG_MODE = (value == true ? 1 : 0); }
         [JsonIgnore]
         public override string AIREXEPath { get => this._Struct.GameExePath; set => this._Struct.GameExePath = value; }
         [JsonIgnore]
