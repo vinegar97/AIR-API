@@ -31,25 +31,40 @@ namespace AIR_API
         {
             FilePath = file.FullName;
 
-            byte[] byteArray = File.ReadAllBytes(FilePath).Skip(4).Take(10).ToArray();
-            AIRVersion = System.Text.Encoding.UTF8.GetString(byteArray);
-            
 
-            string baseString = file.Name.Replace("gamerecording_", "");
+            byte[] header = File.ReadAllBytes(FilePath).Take(3).ToArray();
+            if (header[0] == 0x47 && header[1] == 0x52 && header[2] == 0x43)
+            {
+                byte[] byteArray = File.ReadAllBytes(FilePath).Skip(4).Take(10).ToArray();
+                AIRVersion = System.Text.Encoding.UTF8.GetString(byteArray);
 
-            string month = baseString.Substring(2, 2);
-            string day = baseString.Substring(4, 2);
-            string year = baseString.Substring(0, 2);
 
-            string hour = baseString.Substring(7, 2);
-            string minute = baseString.Substring(9, 2);
-            string second = baseString.Substring(11, 2);
+                string baseString = file.Name.Replace("gamerecording_", "");
 
-            string recordingFormat = $"{month}/{day}/{year} - {hour}.{minute}.{second}";
+                string month = (int.TryParse(baseString.Substring(2, 2), out int m) ? m.ToString() : "?");
+                string day = (int.TryParse(baseString.Substring(4, 2), out int d) ? d.ToString() : "?");
+                string year = (int.TryParse(baseString.Substring(0, 2), out int y) ? y.ToString() : "?");
 
-            Name = recordingFormat;
+                string hour = (int.TryParse(baseString.Substring(7, 2), out int h) ? d.ToString() : "?");
+                string minute = (int.TryParse(baseString.Substring(9, 2), out int M) ? M.ToString() : "?");
+                string second = (int.TryParse(baseString.Substring(11, 2), out int s) ? s.ToString() : "?");
 
-            FormalName = $"Sonic 3 AIR Recording [{recordingFormat}] ";
+                string recordingFormat = $"{month}/{day}/{year} - {hour}.{minute}.{second}";
+
+                if (recordingFormat.Contains("?"))
+                {
+                    recordingFormat = $"?/?/? - ?.?.?";
+                }
+
+                Name = recordingFormat;
+
+                FormalName = $"Sonic 3 AIR Recording [{recordingFormat}] ";
+            }
+            else
+            {
+                throw new Exception();
+            }
+
         }
 
 

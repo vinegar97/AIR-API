@@ -12,8 +12,40 @@ namespace AIR_API
     public class ActiveModsList
     {
         public AIRActiveMods ActiveClass { get; set; }
-        public List<string> ActiveMods { get => ActiveClass.ActiveMods; set => ActiveClass.ActiveMods = value; }
-        public bool UseLegacyLoading { get => ActiveClass.UseLegacyLoading; set => ActiveClass.UseLegacyLoading = value; }
+        public List<string> ActiveMods
+        {
+            get
+            {
+                if (ActiveClass != null)
+                {
+                    return (ActiveClass.ActiveMods != null ? ActiveClass.ActiveMods : new List<string>());
+                }
+                else return new List<string>();
+            }
+            set
+            {
+                if (ActiveClass == null) ActiveClass = new AIRActiveMods();
+                ActiveClass.ActiveMods = value;
+            }
+
+        }
+        public bool UseLegacyLoading
+        {
+            get
+            {
+                if (ActiveClass != null)
+                {
+                    return ActiveClass.UseLegacyLoading;
+                }
+                else return true;
+            }
+            set
+            {
+                if (ActiveClass == null) ActiveClass = new AIRActiveMods();
+                ActiveClass.UseLegacyLoading = value;
+            }
+
+        }
 
         public string ConfigPath = "";
         public ActiveModsList(FileInfo config)

@@ -26,6 +26,7 @@ namespace AIR_API
         public string LoadLevel { get; set; }
         public int? UseCharacters { get; set; }
         public int? StartPhase { get; set; }
+        public bool DevMode { get; set; }
 
         public GameConfig(FileInfo config)
         {
@@ -42,6 +43,7 @@ namespace AIR_API
             if (RawJSONObject.Property("RomPath") != null) RomPath = (string)RawJSONObject.Property("RomPath").Value;
             if (RawJSONObject.Property("WindowSize") != null) WindowSize = (string)RawJSONObject.Property("WindowSize").Value;
             if (RawJSONObject.Property("AudioSampleRate") != null) AudioSampleRate = (string)RawJSONObject.Property("AudioSampleRate").Value;
+            if (RawJSONObject.Property("DevMode") != null) DevMode = (bool)RawJSONObject.Property("DevMode").Value;
 
             if (RawJSONObject.Property("InputDevices") != null)
             {
@@ -53,6 +55,11 @@ namespace AIR_API
                         Devices.Add(new KeyValuePair<string, Device>(deviceProp.Name, new Device(deviceProp)));
                     }
                 }
+            }
+            else
+            {
+                InputDevices = new InputDevices();
+                InputDevices.ResetDevicesToDefault();
             }
         }
 
@@ -67,6 +74,7 @@ namespace AIR_API
             SetProperty("AudioSampleRate", AudioSampleRate);
             SetProperty("WindowSize", WindowSize);
             SetProperty("RomPath", RomPath);
+            SetProperty("DevMode", DevMode);
 
             RawJSONObject["InputDevices"] = InputDevices.GetRawJSONValue(InputDevices);
             File.WriteAllText(FilePath, RawJSONObject.ToString());

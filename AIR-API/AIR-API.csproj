@@ -96,19 +96,16 @@
   <ItemGroup>
     <Compile Include="ActiveModsList.cs" />
     <Compile Include="Animation.cs" />
+    <Compile Include="Settings_Global.cs" />
     <Compile Include="GameConfig.cs" />
     <Compile Include="InputDevices.cs" />
     <Compile Include="InputMappings.cs" />
-    <Compile Include="Raw\Settings\Interfaces\AIRSettingsBase.cs" />
-    <Compile Include="Raw\Settings\Interfaces\AIRSettingsMK1.cs" />
-    <Compile Include="Raw\Settings\Interfaces\AIRSettingsMK2.cs" />
     <Compile Include="KeyPairListToDictionaryHelper.cs" />
     <Compile Include="Mod.cs" />
     <Compile Include="Recording.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="Raw\Settings\Structures\SettingsV0.cs" />
-    <Compile Include="Raw\Settings\Structures\SettingsV1.cs" />
-    <Compile Include="Raw\Settings\Structures\SettingsV2.cs" />
+    <Compile Include="Settings_Input.cs" />
+    <Compile Include="SteamROMHandler.cs" />
     <Compile Include="VersionCheck.cs" />
     <Compile Include="VersionMetadata.cs" />
   </ItemGroup>

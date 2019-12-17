@@ -32,5 +32,13 @@ namespace AIR_API
 
             Version.TryParse(VersionString, out Version);
         }
+
+        public VersionMetadata(Version ver, string ver_string, string game = "", string author = "")
+        {
+            Version = ver;
+            Game = game;
+            Author = author;
+            VersionString = ver_string;
+        }
     }
 }

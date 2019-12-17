@@ -7,53 +7,82 @@ using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Device = AIR_API.InputMappings.Device;
-using AIR_API.Raw.Settings.Structures;
-using AIR_API.Raw.Settings.Interfaces;
 
 namespace AIR_API
 {
     public class Settings
     {
-        public bool FailSafeMode { get => RawSettings.isFailSafeMode; set => RawSettings.isFailSafeMode = value; }
-        public string Sonic3KRomPath { get => RawSettings.Sonic3KRomPath; set => RawSettings.Sonic3KRomPath = value; }
-        public bool FixGlitches { get => RawSettings.FixGlitches; set => RawSettings.FixGlitches = value; }
-        public bool EnableDebugMode { get => RawSettings.EnableDebugMode; set => RawSettings.EnableDebugMode = value; }
-        public int Fullscreen { get => RawSettings.FullscreenMode; set => RawSettings.FullscreenMode = value; }
-        public string AIREXEPath { get => RawSettings.AIREXEPath; set => RawSettings.AIREXEPath = value; }
-        public Version Version { get => RawSettings.Version; }
-        public bool HasEXEPath { get => RawSettings.HasEXEPath; }
         public enum FullscreenType : int
         {
             Windowed = 0,
             Fullscreen = 1,
             ExclusiveFS = 2
         }
-        public InputDevices InputDevices { get; set; }
+
+
+
+        public string Sonic3KRomPath { get; set; }
+        public bool FixGlitches { get; set; }
+        public string AIREXEPath { get; set; }
+        public Version Version;
+        public string GameVersionString { get; set; }
+        public bool HasEXEPath { get => DetectIfHasEXEPath(); }
+        public bool isFailSafeMode { get; set; }
+        public int FullscreenMode { get; set; }
+        public bool DetectIfHasEXEPath()
+        {
+            if (this.AIREXEPath != null) return true;
+            else return false;
+        }
         public List<KeyValuePair<string, Device>> Devices { get => InputDevices.Items; set => InputDevices.Items = value; }
+        public InputDevices InputDevices { get; set; }
 
         public string FilePath = "";
 
-        public AIRSettingsBase RawSettings;
+        private JObject RawJSONObject;
 
         public Settings(FileInfo settings)
         {
             FilePath = settings.FullName;
-            string data = File.ReadAllText(FilePath);
-            AIRSettingsBase.PraseSettings(ref RawSettings, data);
+            if (settings.Exists) Load();
+            else File.Create(settings.FullName);
+        }
 
-            if (RawSettings is AIRSettingsMK2)
+
+        private void Load()
+        {
+            string data = File.ReadAllText(FilePath);
+            try
             {
-                try
-                {
-                    if (data != "") PraseInputDevices(data);
-                    else InputDevices = new InputDevices();
-                }
-                catch
-                {
-                    InputDevices = new InputDevices();
-                }
+                RawJSONObject = JObject.Parse(data);
+            }
+            catch
+            {
+                RawJSONObject = new JObject();
             }
 
+            if (RawJSONObject.Property("GameVersion") != null)
+            {
+                GameVersionString = (string)RawJSONObject.Property("GameVersion").Value;
+                Version.TryParse(GameVersionString, out Version);
+            }
+            if (RawJSONObject.ContainsKey("GameSettings")) 
+            {
+                string subData = RawJSONObject.Property("GameSettings").Value.ToString();
+                JObject subObject = JObject.Parse(subData);
+                if (subObject.ContainsKey("SETTING_FIX_GLITCHES")) FixGlitches = (bool)subObject.Property("SETTING_FIX_GLITCHES").Value;
+            }
+            if (RawJSONObject.Property("Fullscreen") != null) FullscreenMode = (int)RawJSONObject.Property("Fullscreen").Value;
+            if (RawJSONObject.Property("RomPath") != null) Sonic3KRomPath = (string)RawJSONObject.Property("RomPath").Value;
+            if (RawJSONObject.Property("GameExePath") != null) AIREXEPath = (string)RawJSONObject.Property("GameExePath").Value;
+            if (RawJSONObject.Property("FailSafeMode") != null) isFailSafeMode = (bool)RawJSONObject.Property("FailSafeMode").Value;
+
+            if (RawJSONObject.Property("InputDevices") != null) PraseInputDevices(data);
+            else
+            {
+                InputDevices = new InputDevices();
+                InputDevices.ResetDevicesToDefault();
+            }
 
 
 
@@ -61,16 +90,16 @@ namespace AIR_API
 
         private void PraseInputDevices(string data)
         {
-            JObject RawJSONObject = JObject.Parse(data);
+            RawJSONObject = JObject.Parse(data);
             if (!RawJSONObject.ContainsKey("InputDevices"))
             {
-                if ((RawSettings as AIRSettingsMK2).HasEXEPath)
+                if (HasEXEPath)
                 {
                     try
                     {
-                        FileInfo config = new FileInfo($"{Path.GetDirectoryName(RawSettings.AIREXEPath)}//config.json");
+                        FileInfo config = new FileInfo($"{Path.GetDirectoryName(AIREXEPath)}//config.json");
                         GameConfig gameConfig = new GameConfig(config);
-                        if (gameConfig.InputDevices != null) InputDevices = gameConfig.InputDevices;
+                        if (gameConfig.InputDevices != null) Devices = gameConfig.InputDevices.Items;
                         else InputDevices = new InputDevices();
                     }
                     catch
@@ -99,7 +128,59 @@ namespace AIR_API
 
         public void Save()
         {
-            AIRSettingsBase.SaveSettings(ref RawSettings, FilePath, InputDevices);
+            SetProperty("GameVersion", GameVersionString);
+            if (RawJSONObject.ContainsKey("GameSettings"))
+            {
+                string subData = RawJSONObject.Property("GameSettings").Value.ToString();
+                JObject subObject = JObject.Parse(subData);
+                if (subObject.ContainsKey("SETTING_FIX_GLITCHES")) subObject["SETTING_FIX_GLITCHES"] = (FixGlitches ? 1 : 0);
+                else
+                {
+                    subObject.Add("SETTING_FIX_GLITCHES", (FixGlitches ? 1 : 0));
+                }
+                RawJSONObject["GameSettings"] = subObject;
+            }
+            SetProperty("Fullscreen", FullscreenMode);
+            SetProperty("RomPath", Sonic3KRomPath);
+            SetProperty("GameExePath", AIREXEPath);
+            SetProperty("FailSafeMode", isFailSafeMode);
+            if (RawJSONObject.Property("InputDevices") != null)
+            {
+                RawJSONObject["InputDevices"] = InputDevices.GetRawJSONValue(InputDevices);
+            }
+            else
+            {
+                RawJSONObject.Add("InputDevices", InputDevices.GetRawJSONValue(InputDevices));
+            }
+            File.WriteAllText(FilePath, RawJSONObject.ToString());
+
+
+        }
+
+
+        private void SetProperty(string key, object keyValue)
+        {
+            if (keyValue != null)
+            {
+                JToken value = JToken.FromObject(keyValue);
+                if (!RawJSONObject.ContainsKey(key))
+                {
+                    RawJSONObject.Add(key, value);
+                }
+                else
+                {
+                    RawJSONObject.Property(key).Value = value;
+                }
+
+            }
+            else
+            {
+                if (RawJSONObject.ContainsKey(key))
+                {
+                    RawJSONObject.Remove(key);
+                }
+
+            }
         }
     }
 }

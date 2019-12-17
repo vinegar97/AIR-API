@@ -22,7 +22,15 @@ namespace AIR_API
 
         public static JToken GetRawJSONValue(InputDevices input)
         {
-            return JProperty.Parse(JsonConvert.SerializeObject(input.Items));
+
+            var exportModifiedDevices = input.Items;
+            foreach (var device in exportModifiedDevices)
+            {
+                if (!device.Value.HasDeviceNames) device.Value.DeviceNames = null;
+            }
+            
+
+            return JProperty.Parse(JsonConvert.SerializeObject(KeyPairListToDictionaryHelper.ToDictionary(exportModifiedDevices, x => x.Key, x => x.Value), Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
         }
 
 
