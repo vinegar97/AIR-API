@@ -106,6 +106,7 @@
     <Compile Include="Settings.cs" />
     <Compile Include="Settings_Input.cs" />
     <Compile Include="SteamROMHandler.cs" />
+    <Compile Include="NewtonsoftValidator.cs" />
     <Compile Include="VersionCheck.cs" />
     <Compile Include="VersionMetadata.cs" />
   </ItemGroup>

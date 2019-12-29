@@ -193,7 +193,11 @@ namespace AIR_API
         {
             string data = File.ReadAllText(FilePath);
             Structure = Newtonsoft.Json.JsonConvert.DeserializeObject<GlobalSettings>(data);
-            if (Structure == null) Structure = new GlobalSettings();
+            if (Structure == null)
+            {
+                Structure = new GlobalSettings();
+                Save();
+            }
         }
 
         public void Save()

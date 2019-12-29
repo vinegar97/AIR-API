@@ -30,7 +30,9 @@ namespace AIR_API
             string data = File.ReadAllText(FilePath);
             try
             {
-                RawJSONObject = JObject.Parse(data);
+                if (NewtonsoftValidator.ValidateJSON(data)) RawJSONObject = JObject.Parse(data);
+                else RawJSONObject = new JObject();
+
                 if (RawJSONObject.Property("InputDevices") != null) PraseInputDevices(data);
                 else
                 {
