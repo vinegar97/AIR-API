@@ -153,17 +153,20 @@ namespace AIR_API
                 string q = "\"";
 
                 string output = "";
-                output += "{";
+                output += $"{bo}";
                 int count = FrameList.Count() - 1;
                 foreach (Frame frame in FrameList)
                 {
                     int index = FrameList.IndexOf(frame);
                     output += nL;
-                    output += $"\t{q}{frame.Name}{q}:  {bo} {q}File{q}: {q}{frame.File}{q}, {q}Rect{q}: {q}{frame.X},{frame.Y},{frame.Width},{frame.Height}{q}, {q}Center{q}: {q}{frame.CenterX},{frame.CenterY}{q} {bc}";
+                    output += $"\t{q}{frame.Name}{q}: {bo} {q}File{q}: {q}{frame.File}{q}";
+                    output += $", {q}Rect{q}: {q}{frame.X},{frame.Y},{frame.Width},{frame.Height}{q}";
+                    output += $", {q}Center{q}: {q}{frame.CenterX},{frame.CenterY}{q}";
+                    output += $"{bc}";
                     if (index != count) output += ",";
                 }
                 output += nL;
-                output += "}";
+                output += $"{bc}";
                 if (SaveAsLocation != "")
                 {
                     File.WriteAllText(SaveAsLocation, output);
