@@ -53,13 +53,11 @@ namespace AIR_API
             }
             catch (Exception ex)
             {
-
             }
         }
 
         public class Anim
         {
-
             public class Rect
             {
                 public int X { get; set; }
@@ -76,7 +74,6 @@ namespace AIR_API
 
                 public Rect()
                 {
-
                 }
             }
 
@@ -134,13 +131,12 @@ namespace AIR_API
                                 }
                             }
                         }
-                        if (_center_x != null && _center_y != null) FrameList.Add(new Frame(_name, _file, (int)_rect.X, (int)_rect.Y, (int)_rect.Width, (int)_rect.Height, (int)_center_x, (int)_center_y, Directory));
-                        else FrameList.Add(new Frame(_name, _file, (int)_rect.X, (int)_rect.Y, (int)_rect.Width, (int)_rect.Height, 0, 0, Directory));
+                        if (_center_x != null && _center_y != null)
+                            FrameList.Add(new Frame(_name, _file, (int)_rect.X, (int)_rect.Y, (int)_rect.Width, (int)_rect.Height, (int)_center_x, (int)_center_y, Directory));
+                        else
+                            FrameList.Add(new Frame(_name, _file, (int)_rect.X, (int)_rect.Y, (int)_rect.Width, (int)_rect.Height, 0, 0, Directory));
                     }
-
                 }
-
-
             }
 
             public Anim(string _directory, string _fileLocation)
@@ -174,7 +170,6 @@ namespace AIR_API
                     FileLocation = SaveAsLocation;
                 }
                 else File.WriteAllText(FileLocation, output);
-
             }
 
             public class Frame
@@ -226,11 +221,6 @@ namespace AIR_API
                             }
                         }
                     }
-
-
-
-
-
                     ImageSource result = bitmap;
                     return result;
                 }
@@ -259,14 +249,8 @@ namespace AIR_API
                     Height = 0;
                     CenterX = 0;
                     CenterY = 0;
-
                 }
-
-
             }
         }
     }
-
-
-
 }
