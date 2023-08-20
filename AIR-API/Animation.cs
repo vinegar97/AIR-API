@@ -44,7 +44,6 @@ namespace AIR_API
             }
         }
 
-
         public void Save(string SaveAsLocation = "")
         {
             try
@@ -58,31 +57,10 @@ namespace AIR_API
 
         public class Anim
         {
-            public class Rect
-            {
-                public int X { get; set; }
-                public int Y { get; set; }
-                public int Width { get; set; }
-                public int Height { get; set; }
-                public Rect(int x, int y, int width, int height)
-                {
-                    X = x;
-                    Y = y;
-                    Width = width;
-                    Height = height;
-                }
-
-                public Rect()
-                {
-                }
-            }
-
             private string nL = Environment.NewLine;
             public List<Frame> FrameList = new List<Frame>();
             public string Directory;
             public string FileLocation;
-
-
 
             public Anim(FileInfo file)
             {
@@ -95,7 +73,10 @@ namespace AIR_API
                 {
                     string _name = "";
                     string _file = "";
-                    Rect _rect = new Rect();
+                    int? _x = null;
+                    int? _y = null;
+                    int? _width = null;
+                    int? _height = null;
                     int? _center_x = null;
                     int? _center_y = null;
 
@@ -117,7 +98,10 @@ namespace AIR_API
                                     {
                                         Rect.Add(int.Parse(item));
                                     }
-                                    _rect = new Rect(Rect[0], Rect[1], Rect[2], Rect[3]);
+                                    _x = Rect[0];
+                                    _y = Rect[1];
+                                    _width = Rect[2];
+                                    _height = Rect[3];
                                 }
                                 else if (content.Name == "Center")
                                 {
@@ -131,10 +115,9 @@ namespace AIR_API
                                 }
                             }
                         }
-                        if (_center_x != null && _center_y != null)
-                            FrameList.Add(new Frame(_name, _file, (int)_rect.X, (int)_rect.Y, (int)_rect.Width, (int)_rect.Height, (int)_center_x, (int)_center_y, Directory));
-                        else
-                            FrameList.Add(new Frame(_name, _file, (int)_rect.X, (int)_rect.Y, (int)_rect.Width, (int)_rect.Height, 0, 0, Directory));
+                        if (_center_x == null) _center_x = 0;
+                        if (_center_y == null) _center_y = 0;
+                        FrameList.Add(new Frame(_name, _file, (int)_x, (int)_y, (int)_width, (int)_height, (int)_center_x, (int)_center_y, Directory));
                     }
                 }
             }
@@ -160,8 +143,8 @@ namespace AIR_API
                     int index = FrameList.IndexOf(frame);
                     output += nL;
                     output += $"\t{q}{frame.Name}{q}: {bo} {q}File{q}: {q}{frame.File}{q}";
-                    output += $", {q}Rect{q}: {q}{frame.X},{frame.Y},{frame.Width},{frame.Height}{q}";
-                    output += $", {q}Center{q}: {q}{frame.CenterX},{frame.CenterY}{q}";
+                    output += $", {q}Rect{q}: {q}{frame.X}, {frame.Y}, {frame.Width}, {frame.Height}{q}";
+                    output += $", {q}Center{q}: {q}{frame.CenterX}, {frame.CenterY}{q}";
                     output += $"{bc}";
                     if (index != count) output += ",";
                 }
