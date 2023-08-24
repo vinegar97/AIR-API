@@ -170,6 +170,21 @@ namespace AIR_API
                 public int CenterX;
                 public int CenterY;
 
+                public Frame(string _name, string _file, int _x, int _y, int _width, int _height, int _centerX, int _centerY, string _directory)
+                {
+                    Name = _name;
+                    File = _file;
+                    Directory = _directory;
+                    X = _x;
+                    Y = _y;
+                    Width = _width;
+                    Height = _height;
+                    CenterX = _centerX;
+                    CenterY = _centerY;
+                }
+
+                public Frame(string _directory) : this("New Frame", "", 0, 0, 0, 0, 0, 0, _directory) { }
+
                 public override string ToString()
                 {
                     return Name;
@@ -209,32 +224,6 @@ namespace AIR_API
                     }
                     ImageSource result = bitmap;
                     return result;
-                }
-
-                public Frame(string _name, string _file, int _x, int _y, int _width, int _height, int _centerX, int _centerY, string _directory)
-                {
-                    Name = _name;
-                    File = _file;
-                    Directory = _directory;
-                    X = _x;
-                    Y = _y;
-                    Width = _width;
-                    Height = _height;
-                    CenterX = _centerX;
-                    CenterY = _centerY;
-                }
-
-                public Frame(string _directory)
-                {
-                    Name = "New Frame";
-                    File = "";
-                    Directory = _directory;
-                    X = 0;
-                    Y = 0;
-                    Width = 0;
-                    Height = 0;
-                    CenterX = 0;
-                    CenterY = 0;
                 }
             }
         }
